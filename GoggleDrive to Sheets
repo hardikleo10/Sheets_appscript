@@ -1,0 +1,43 @@
+function listFilesInFolder() {
+  var folderId = 'wfferfe'; // Your folder ID
+  var folder = DriveApp.getFolderById(folderId);
+  var files = folder.getFiles();
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  sheet.clear(); // Clear the sheet before adding new data
+  sheet.appendRow(["File Name", "Download URL", "Owner"]);
+  
+  while (files.hasNext()) {
+    var file = files.next();
+    var fileName = file.getName();
+    var fileUrl = getDownloadUrl(file);
+    var owner = getOwner(file.getId());
+    sheet.appendRow([fileName, fileUrl, owner]);
+  }
+}
+
+// Function to get the download URL of a file
+function getDownloadUrl(file) {
+  var mimeType = file.getMimeType();
+  var fileUrl = file.getUrl();
+  if (mimeType === MimeType.GOOGLE_SHEETS) {
+    return fileUrl.replace('/edit', '/export?format=xlsx');
+  } else if (mimeType === MimeType.GOOGLE_DOCS) {
+    return fileUrl.replace('/edit', '/export?format=docx');
+  } else if (mimeType === MimeType.GOOGLE_SLIDES) {
+    return fileUrl.replace('/edit', '/export?format=pptx');
+  } else if (mimeType === MimeType.GOOGLE_FORMS) {
+    return fileUrl;
+  } else {
+    return file.getDownloadUrl();
+  }
+}
+
+// Function to get the owner of a file using Drive API
+function getOwner(fileId) {
+  var file = Drive.Files.get(fileId, {fields: 'owners'});
+  if (file.owners && file.owners.length > 0) {
+    return file.owners[0].emailAddress;
+  } else {
+    return "No owner found";
+  }
+}
