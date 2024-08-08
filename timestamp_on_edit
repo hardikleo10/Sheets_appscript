@@ -1,0 +1,28 @@
+function onEdit(e) {
+  var sheet = e.source.getActiveSheet();
+  var range = e.range;
+  var columnM = 13; // Column M is the 13th column 
+  var columnN = 14; // Column N is the 14th column
+  var columnO = 15; // Column O is the 15th column
+  var columnP = 16; // Column P is the 16th column
+
+  // Handle checkbox in column M
+  if (range.getColumn() === columnM) {
+    var adjacentCell = range.offset(0, 1);
+    if (range.isChecked()) {
+      adjacentCell.setValue(new Date());
+    } else {
+      adjacentCell.clearContent();
+    }
+  }
+  
+  // Handle data entry in column O
+  if (range.getColumn() === columnO) {
+    var adjacentCellO = range.offset(0, 1);
+    if (range.getValue() !== '') {
+      adjacentCellO.setValue(new Date());
+    } else {
+      adjacentCellO.clearContent();
+    }
+  }
+}
